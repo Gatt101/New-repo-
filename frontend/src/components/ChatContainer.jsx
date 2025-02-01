@@ -30,6 +30,66 @@ const ChatContainer = () => {
         }
       },[messages])
   
+  const renderMessage = (message) => {
+    const isOwnMessage = message.senderId === authUser._id;
+    
+    return (
+      <div
+        key={message._id}
+        className={`chat ${isOwnMessage ? "chat-end" : "chat-start"}`}
+      >
+        <div className="chat-image avatar">
+          <div className="size-10 rounded-full border">
+            <img
+              src={isOwnMessage ? authUser.profilePic || "/avatar.png" : selectedUser.profilePic || "/avatar.png"}
+              alt="profile pic"
+            />
+          </div>
+        </div>
+        <div className="chat-header mb-1">
+          <time className="text-xs opacity-50">{formatMessageTime(message.createdAt)}</time>
+        </div>
+
+        <div className="chat-bubble flex flex-col gap-2 relative">
+          {message.image && (
+            <img
+              src={message.image}
+              alt="Attachment"
+              className="sm:max-w-[200px] rounded-md mb-2"
+            />
+          )}
+          <div className="flex flex-col gap-2">
+            <p className="text-base-content">{message.text}</p>
+            
+            {message.translatedText && (
+              <div className="mt-2 relative">
+                <div className="absolute -left-1 top-0 w-0.5 h-full bg-primary/20 rounded"></div>
+                <div className="pl-3">
+                  <div className="flex items-center gap-2 text-xs text-primary/70 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m5 8 6 6"/>
+                      <path d="m4 14 6 6"/>
+                      <path d="M2 5h12"/>
+                      <path d="M4 2h12"/>
+                      <path d="M3 2v7"/>
+                      <path d="M13 2v7"/>
+                      <path d="M8 21h12"/>
+                      <path d="M10 18h12"/>
+                      <path d="M15 12v7"/>
+                      <path d="M21 12v7"/>
+                    </svg>
+                    <span className="font-medium">Translation</span>
+                  </div>
+                  <p className="text-base-content/80 text-sm">{message.translatedText}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if(isMessagesLoading) 
     return  (
     <div className="flex-1 flex flex-col overflow-auto">
@@ -47,44 +107,8 @@ const ChatContainer = () => {
       <ChatHeader/>
 
        <div className="flex-1 overflow-y-auto p-4 space-y-4 ">
-        {messages.map((message)=>(
-          <div
-            key={message._id}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-            ref={messageEndRef}
-          >
-            <div className="chat-image avatar">
-              <div className="size-10 rounded-full border">
-                  <img 
-                  src={message.senderId === authUser._id 
-                    ? authUser.profilePic || "/avatar.png"
-                    : selectedUser.profilePic || "/avatar.png" 
-                  }     
-                  alt="profile pic "
-                  />
-                </div>
-              </div>
-              <div className="chat-header mb-1">
-                <time className="text-xs opacity-50">
-                   {formatMessageTime(message.createdAt)}
-                   </time>   
-                  </div>
-
-
-                  <div className="chat-bubble flex flex-col">
-                    {message.image && (
-                      <img
-                       src={message.image}
-                       alt="Attachment"
-                       className="sm:max-w-[200px] rounded-md mb-2"
-                      />
-                    )}
-                    {message.text && <p>{message.text}</p>}
-                </div> 
-
-          </div>
-         ))}
-         
+        {messages.map(renderMessage)}
+        <div ref={messageEndRef} />
         </div>
 
       <MessageInput />

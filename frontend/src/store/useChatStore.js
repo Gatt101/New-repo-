@@ -9,6 +9,7 @@ export const useChatStore = create((set,get) => ({
   selectedUser:null,
   isUsersLoading: false,
   isMessageLoading: false ,
+  transcribedText: "",
 
   getUsers: async () => {
       set({ isUsersLoading: true});
@@ -69,6 +70,8 @@ export const useChatStore = create((set,get) => ({
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
+
+  setTranscribedText: (text) => set({ transcribedText: text }),
   
 }))
   
